@@ -2,28 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-
-//use宣言は外部にあるクラスをPostController内にインポートできる。
-//この場合、App\Models内のPostクラスをインポートしている。
 use App\Models\Post;
-/**
- * Post一覧を表示する
- * 
- * @param Post Postモデル
- * @return array Postモデルリスト
- */
-
-
+use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    //
+    public function index()
+    // public function index(Post $post)
+    {
+        return view('posts.index')->
+        with([
+            'posts' => Post::get(),
+            // 'posts' => $post->get(),
+            'num' => 1,
+            'name' => 'Yamada'
+        ]);  
+       //blade内で使う変数'posts'と設定。'posts'の中身にgetを使い、インスタンス化した$postを代入。
 
-    public function index(Post $post)//インポートしたPostをインスタンス化して$postとして使用。
-{
-    return $post->get();//$postの中身を戻り値にする。
+       //view('posts.index')は、resources/views/posts/index.blade.phpを指定している。
+      //posts. =  "resources/views/posts"のディレクトリを指定している。
+        //with(['posts' => $post->get()]); とは　データをビューに渡すためのメソッド
+        //get()メソッドで、postsテーブルのレコードを全て取得し、ビューに渡している。
+    }
 }
-}
-
+?>
