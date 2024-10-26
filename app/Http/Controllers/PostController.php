@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
-use Illuminate\Http\Request;
+use App\Http\Requests\PostRequest; // useする
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Post $post)
     // public function index(Post $post)
     {
         return view('posts.index')->
         with([
-            'posts' => Post::get(),
+            'posts' => $post->getPaginateByLimit(),
+            // 'posts' => Post::getPaginateByLimit(),
+            //Postモデルのgetメソッドを使って、postsテーブルのレコードを全て取得し、ビューに渡している。
             // 'posts' => $post->get(),
             'num' => 1,
             'name' => 'Yamada'
@@ -24,5 +26,38 @@ class PostController extends Controller
         //with(['posts' => $post->get()]); とは　データをビューに渡すためのメソッド
         //get()メソッドで、postsテーブルのレコードを全て取得し、ビューに渡している。
     }
+    /**
+ * 特定IDのpostを表示する
+ *
+ * @params Object Post // 引数の$postはid=1のPostインスタンス
+ * @return Reposnse post view
+ */
+public function show(Post $post)
+{
+    return view('posts.show')->with(['post' => $post]);
+ //'post'はbladeファイルで使う変数。中身は$postはid=1のPostインスタンス。
+}
+
+public function create()
+{
+    return view('posts.create');
+}
+
+    
+
+public function store(Post $post, PostRequest $request) // 引数をRequestからPostRequestにする
+
+{
+    $input = $request['post'];
+    //viewから送られてきたnameが"post"フォームの内容をrequestで取得
+    $post->fill($input)->save();
+    //空だったPostインスタンスのプロパティを、受け取ったキーごとに上書きができます。
+    //fillメソッドで、Postインスタンスのプロパティを一括で上書き
+    
+    //post.php のクラスでfillableを定義しないと、fillメソッドで一括上書きできない。個人的には使いにくそう
+    
+    
+    return redirect('/posts/' . $post->id);
+}
 }
 ?>
